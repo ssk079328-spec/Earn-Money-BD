@@ -4,7 +4,7 @@ const http = require('http');
 
 // --- আপনার তথ্যগুলো এখানে সেট করা হয়েছে ---
 const token = '8828205513:AAE_91wrwvdLA-SIyTZTSdYpFM7El8LaMYQ';
-const mongoURI = 'mongodb+srv://admin:Bot1234@cluster0.i8iqhvl.mongodb.net/?appName=Cluster0';
+const mongoURI = 'mongodb+srv://admin:bot1234@cluster0.i8iqhvl.mongodb.net/?appName=Cluster0';
 const monetagLink = 'https://www.example.com'; // আপনার মনিটেগ ডাইরেক্ট লিঙ্কটি এখানে বসান
 
 // রেন্ডার সার্ভার সচল রাখার জন্য (Keep-Alive)
