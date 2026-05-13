@@ -1,12 +1,14 @@
 {
-  "name": "earn-money-bot",
+  "name": "earn-money-bd",
   "version": "1.0.0",
+  "description": "Telegram Earning Bot for Monetag",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "node-telegram-bot-api": "^0.66.0",
-    "mongoose": "^8.0.0"
+    "mongoose": "^8.0.0",
+    "mongodb": "^6.7.0"
   }
 }
