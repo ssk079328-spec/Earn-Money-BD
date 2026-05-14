@@ -3,48 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Money BD</title>
+    <title>Earn Money BD - Updated UI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- আপনার মনিটেগ SDK -->
     <script src='//libtl.com/sdk.js' data-zone='11003133' data-sdk='show_11003133'></script>
 
     <style>
-        :root { --p: #6c5ce7; --s: #a29bfe; --bg: #f1f2f6; }
+        :root { --p: #6c5ce7; --s: #a29bfe; --bg: #f8f9fa; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        
+        .container { padding: 15px; max-width: 420px; margin: auto; padding-bottom: 100px; /* নিচের ব্যানারের জন্য জায়গা */ }
+
+        /* চলন্ত হেডলাইন */
         .marquee { background: var(--p); color: white; padding: 10px; font-size: 13px; overflow: hidden; white-space: nowrap; border-radius: 0 0 15px 15px; }
-        .marquee-inner { display: inline-block; animation: scroll 15s linear infinite; }
+        .marquee-inner { display: inline-block; animation: scroll 18s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        
-        .container { padding: 15px; max-width: 400px; margin: auto; }
-        .card { background: linear-gradient(135deg, var(--p), var(--s)); border-radius: 25px; padding: 30px; color: white; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2); text-align: center; margin-bottom: 20px; }
-        .balance { font-size: 38px; font-weight: 800; margin: 10px 0; }
-        
+
+        /* প্রোফাইল কার্ড */
+        .card { background: linear-gradient(135deg, var(--p), var(--s)); border-radius: 25px; padding: 30px; color: white; box-shadow: 0 8px 25px rgba(108, 92, 231, 0.2); text-align: center; margin-bottom: 20px; }
+        .balance { font-size: 40px; font-weight: 800; margin: 5px 0; }
+
+        /* বাটন গ্রিড */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn { background: white; border: none; padding: 18px; border-radius: 20px; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
+        .btn { background: white; border: none; padding: 18px; border-radius: 20px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: 0.2s; color: #444; }
         .btn:active { transform: scale(0.95); }
-        .btn-main { grid-column: span 2; background: #2d3436; color: white; font-size: 18px; padding: 25px; }
+        .btn-main { grid-column: span 2; background: #2d3436; color: white; font-size: 18px; padding: 22px; margin-top: 10px; }
+
+        /* ছোট ফ্লোটিং ব্যানার অ্যাড এরিয়া */
+        #floating-ad {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            height: 50px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #888;
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
 
 <div class="marquee">
-    <div class="marquee-inner">📢 প্রতি ভিডিওতে ০.২০ টাকা আয় করুন। ৫ জন রেফার করলে ১০ টাকা বোনাস! দ্রুত পেমেন্ট বিকাশ ও নগদে।</div>
+    <div class="marquee-inner">📢 প্রতি ভিডিওতে ০.২০ টাকা আয় করুন। রেফার করে ইনকাম বাড়ান। পেমেন্ট পাবেন বিকাশ ও নগদে। আমাদের সাথেই থাকুন!</div>
 </div>
 
 <div class="container">
     <div class="card">
-        <div id="u-name" style="font-size: 18px; opacity: 0.9;">Loading...</div>
-        <div style="font-size: 12px; margin-top: 15px; letter-spacing: 1px;">CURRENT BALANCE</div>
+        <div id="u-name" style="font-size: 18px; font-weight: 500;">User...</div>
+        <div style="font-size: 11px; margin-top: 15px; letter-spacing: 1.5px; opacity: 0.9;">AVAILABLE BALANCE</div>
         <div class="balance">৳ <span id="bal">0.00</span></div>
     </div>
 
     <div class="grid">
-        <button class="btn btn-main" onclick="watchAd()">📺 Earn Money (0.20 TK)</button>
+        <button class="btn btn-main" onclick="watchAd()">💰 EARN 0.20 TK (WATCH AD)</button>
         <button class="btn" onclick="claimDaily()">🎁 Daily Reward</button>
-        <button class="btn" onclick="shareRefer()">🔗 Refer Link</button>
-        <button class="btn" onclick="tg.showAlert('মিনিমাম উইথড্র ৫০ টাকা।')">💸 Withdraw</button>
-        <button class="btn" onclick="tg.showAlert('ID: '+userId)">👤 Profile</button>
+        <button class="btn" onclick="shareRefer()">🔗 Copy Refer</button>
+        <button class="btn" onclick="tg.showAlert('মিনিমাম ৫০ টাকা উইথড্র।')">💸 Withdraw</button>
+        <button class="btn" onclick="showProfile()">👤 Profile</button>
     </div>
+</div>
+
+<!-- ছোট ব্যানার অ্যাড সেকশন -->
+<div id="floating-ad">
+    বিজ্ঞাপন লোড হচ্ছে... (এখানে ব্যানার আসবে)
 </div>
 
 <script>
@@ -53,8 +82,17 @@
     const userId = tg.initDataUnsafe.user.id;
     const apiBase = "https://earn-money-bd.onrender.com";
 
-    // ইন-অ্যাপ অটো অ্যাড সেটিংস
-    show_11003133({ type: 'inApp', inAppSettings: { frequency: 2, capping: 0.1, interval: 30, timeout: 5 }});
+    // ইন-অ্যাপ ইন্টারস্টিশিয়াল সেটিংস (ফ্রিকোয়েন্সি কমানো হয়েছে যেন ফুল স্ক্রিন বিরক্ত না করে)
+    show_11003133({
+      type: 'inApp',
+      inAppSettings: {
+        frequency: 1, // কমিয়ে ১ করা হয়েছে
+        capping: 0.5, // ৩০ মিনিটে ১ বার
+        interval: 60, 
+        timeout: 10,
+        everyPage: false
+      }
+    });
 
     function load() {
         document.getElementById('u-name').innerText = "হ্যালো, " + tg.initDataUnsafe.user.first_name;
@@ -64,35 +102,41 @@
     }
     load();
 
+    // অ্যাড দেখার সিস্টেম (পোস্টব্যাক ও রিয়েল-টাইম আপডেট)
     function watchAd() {
         if (typeof show_11003133 === 'function') {
-            // YMID হিসেবে ইউজার আইডি পাঠানো হচ্ছে পোস্টব্যাকের জন্য
-            show_11003133({ ymid: userId }).then(() => {
-                tg.showAlert("বিজ্ঞাপন দেখা শেষ! ০.২০ টাকা যোগ হচ্ছে...");
-                setTimeout(load, 3000); 
+            tg.showConfirm("আপনি কি বিজ্ঞাপন দেখে ০.২০ টাকা আয় করতে চান?", (ok) => {
+                if(ok) {
+                    show_11003133({ ymid: userId }).then(() => {
+                        tg.showAlert("বিজ্ঞাপন দেখা শেষ! কিছুক্ষণ অপেক্ষা করুন, ব্যালেন্স যোগ হচ্ছে।");
+                        // পোস্টব্যাক প্রসেস হতে কিছুটা সময় লাগে তাই ৫ সেকেন্ড পর রিফ্রেশ
+                        setTimeout(load, 5000); 
+                    });
+                }
             });
         }
     }
 
     function claimDaily() {
-        const last = localStorage.getItem('daily_'+userId);
-        if (last && (Date.now() - last) < 86400000) return tg.showAlert("আগামীকাল আবার চেষ্টা করুন!");
-        localStorage.setItem('daily_'+userId, Date.now());
-        updateDB(1.0, "ডেইলি বোনাস যোগ হয়েছে!");
+        const last = localStorage.getItem('c_'+userId);
+        if (last && (Date.now() - last) < 86400000) return tg.showAlert("আগামীকাল আবার ক্লেইম করতে পারবেন।");
+        localStorage.setItem('c_'+userId, Date.now());
+        
+        fetch(`${apiBase}/api/add-balance`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ chatId: userId, amount: 1.0 })
+        }).then(() => { load(); tg.showAlert("১ টাকা বোনাস পেলেন!"); });
     }
 
     function shareRefer() {
         const link = `https://t.me/Emoneybd_Bot?start=${userId}`;
         navigator.clipboard.writeText(link);
-        tg.showAlert("রেফার লিঙ্ক কপি হয়েছে! শেয়ার করুন:\n" + link);
+        tg.showAlert("রেফার লিঙ্ক কপি হয়েছে:\n" + link);
     }
 
-    function updateDB(a, m) {
-        fetch(`${apiBase}/api/add-balance`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chatId: userId, amount: a })
-        }).then(() => { load(); tg.showAlert(m); });
+    function showProfile() {
+        tg.showAlert(`নাম: ${tg.initDataUnsafe.user.first_name}\nআইডি: ${userId}\nস্ট্যাটাস: একটিভ ✅`);
     }
 </script>
 </body>
