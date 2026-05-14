@@ -1,65 +1,76 @@
-const TelegramBot = require('node-telegram-bot-api');
-const mongoose = require('mongoose');
-const express = require('express');
-const cors = require('cors');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn Money BD</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- এখানে আপনার মনিটেগ থেকে দেওয়া SDK স্ক্রিপ্ট লিঙ্কটি বসান -->
+    <script src='//protagery.com/v1/sdk.js'></script> 
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #f0f2f5; text-align: center; padding: 20px; color: #333; }
+        .app-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        .balance-text { font-size: 18px; color: #777; margin-bottom: 5px; }
+        .balance-amount { font-size: 36px; color: #2ecc71; font-weight: bold; margin-bottom: 25px; }
+        .btn-earn { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-earn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
 
-// --- আপনার তথ্য ---
-const token = '8828205513:AAE_91wrwvdLA-SIyTZTSdYpFM7El8LaMYQ';
-const mongoURI = 'mongodb+srv://admin:bot1234@cluster0.i8iqhvl.mongodb.net/?appName=Cluster0';
-const miniAppUrl = 'https://ssk079328-spec.github.io/Earn-Money-BD/';
+    <div class="app-card">
+        <h2 id="user-greeting">Loading...</h2>
+        <div class="balance-text">আপনার মোট ব্যালেন্স</div>
+        <div class="balance-amount">৳ <span id="user-balance">0.00</span></div>
+        
+        <button onclick="playAd()" class="btn-earn">📺 ভিডিও দেখে আয় করুন</button>
+    </div>
 
-const bot = new TelegramBot(token, { polling: true });
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        const userId = tg.initDataUnsafe.user.id;
+        const apiBase = "https://earn-money-bd.onrender.com"; // আপনার রেন্ডার ইউআরএল
 
-// ডাটাবেস কানেকশন
-mongoose.connect(mongoURI)
-    .then(() => console.log("Real-Time DB Connected Successfully!"))
-    .catch(err => console.error("DB Connection Error:", err));
-
-// ইউজার মডেল
-const userSchema = new mongoose.Schema({
-    chatId: Number,
-    name: String,
-    balance: { type: Number, default: 0.00 }
-});
-const User = mongoose.model('User', userSchema);
-
-// --- API: মিনি অ্যাপের জন্য ডাটা পাঠানো ---
-app.get('/api/user/:id', async (req, res) => {
-    try {
-        const user = await User.findOne({ chatId: req.params.id });
-        res.json(user || { error: "User not found" });
-    } catch (e) { res.status(500).send(e); }
-});
-
-// --- API: বিজ্ঞাপন দেখার পর ব্যালেন্স যোগ করা ---
-app.post('/api/add-balance', async (req, res) => {
-    const { chatId, amount } = req.body;
-    try {
-        const user = await User.findOneAndUpdate(
-            { chatId: chatId },
-            { $inc: { balance: amount } },
-            { new: true, upsert: true }
-        );
-        res.json({ success: true, newBalance: user.balance });
-    } catch (err) { res.status(500).json({ success: false }); }
-});
-
-// বট কমান্ড
-bot.onText(/\/start/, async (msg) => {
-    const chatId = msg.chat.id;
-    let user = await User.findOne({ chatId });
-    if (!user) await User.create({ chatId, name: msg.from.first_name });
-
-    bot.sendMessage(chatId, `আসসালামু আলাইকুম ${msg.from.first_name}!\nআপনার ইনকাম শুরু করতে নিচের বাটনে ক্লিক করুন।`, {
-        reply_markup: {
-            inline_keyboard: [[{ text: "💰 ওপেন মিনি অ্যাপ", web_app: { url: miniAppUrl } }]]
+        // ডাটা লোড করা
+        function fetchUserData() {
+            document.getElementById('user-greeting').innerText = "হ্যালো, " + tg.initDataUnsafe.user.first_name;
+            fetch(`${apiBase}/api/user/${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.balance !== undefined) {
+                        document.getElementById('user-balance').innerText = data.balance.toFixed(2);
+                    }
+                });
         }
-    });
-});
+        fetchUserData();
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+        // বিজ্ঞাপন দেখানো এবং রিওয়ার্ড দেওয়া
+        function playAd() {
+            // আপনার Rewarded Ad কোড
+            show_11003133().then(() => {
+                // বিজ্ঞাপন শেষ হলে রিয়াল-টাইম আপডেট
+                rewardUser(0.50); 
+            }).catch(e => {
+                alert("বিজ্ঞাপন লোড হয়নি, আবার চেষ্টা করুন।");
+            });
+        }
+
+        function rewardUser(amount) {
+            fetch(`${apiBase}/api/add-balance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chatId: userId, amount: amount })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('user-balance').innerText = data.newBalance.toFixed(2);
+                    tg.showAlert("অভিনন্দন! আপনি ০.৫০ টাকা আয় করেছেন।");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
