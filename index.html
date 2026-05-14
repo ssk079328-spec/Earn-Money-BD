@@ -3,74 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Money BD</title>
+    <title>Earn Money BD - Mini App</title>
+    <!-- টেলিগ্রাম ও মনিটেগ স্ক্রিপ্ট -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- এখানে আপনার মনিটেগ থেকে দেওয়া SDK স্ক্রিপ্ট লিঙ্কটি বসান -->
-    <script src='//protagery.com/v1/sdk.js'></script> 
+    <script src='//libtl.com/sdk.js' data-zone='11003133' data-sdk='show_11003133'></script>
 
     <style>
-        body { font-family: 'Arial', sans-serif; background: #f0f2f5; text-align: center; padding: 20px; color: #333; }
-        .app-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        .balance-text { font-size: 18px; color: #777; margin-bottom: 5px; }
-        .balance-amount { font-size: 36px; color: #2ecc71; font-weight: bold; margin-bottom: 25px; }
-        .btn-earn { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
-        .btn-earn:active { transform: scale(0.95); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 400px; margin: auto; }
+        
+        /* প্রোফাইল কার্ড */
+        .profile-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
+        .user-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .balance-box { background: #e8f5e9; padding: 15px; border-radius: 12px; margin-top: 10px; }
+        .balance-label { color: #666; font-size: 14px; }
+        .balance-amount { font-size: 28px; color: #2e7d32; font-weight: bold; }
+
+        /* মেনু গ্রিড */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .menu-item { background: white; border: none; padding: 20px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; }
+        .menu-item:active { transform: scale(0.95); background: #fafafa; }
+        
+        /* আইকন স্টাইল (সিম্পল ইমোজি) */
+        .menu-item span { font-size: 24px; margin-bottom: 8px; }
+
+        /* বিশেষ বাটন */
+        .btn-main { grid-column: span 2; background: linear-gradient(135deg, #4834d4, #686de0); color: white; padding: 25px; font-size: 18px; }
+        .btn-daily { border-bottom: 4px solid #f9ca24; }
+        .btn-refer { border-bottom: 4px solid #eb4d4b; }
+        .btn-withdraw { border-bottom: 4px solid #6ab04c; }
+        .btn-profile { border-bottom: 4px solid #22a6b3; }
     </style>
 </head>
 <body>
 
-    <div class="app-card">
-        <h2 id="user-greeting">Loading...</h2>
-        <div class="balance-text">আপনার মোট ব্যালেন্স</div>
-        <div class="balance-amount">৳ <span id="user-balance">0.00</span></div>
-        
-        <button onclick="playAd()" class="btn-earn">📺 ভিডিও দেখে আয় করুন</button>
+<div class="container">
+    <!-- ইউজার প্রোফাইল সেকশন -->
+    <div class="profile-card">
+        <div class="user-name" id="display-name">Loading...</div>
+        <div class="balance-box">
+            <div class="balance-label">মোট আয় (ব্যালেন্স)</div>
+            <div class="balance-amount">৳ <span id="balance-val">0.00</span></div>
+        </div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        const userId = tg.initDataUnsafe.user.id;
-        const apiBase = "https://earn-money-bd.onrender.com"; // আপনার রেন্ডার ইউআরএল
+    <!-- মেনু বাটন সমূহ -->
+    <div class="menu-grid">
+        <button class="menu-item btn-main" onclick="watchAd()">
+            <span>📺</span> ভিডিও দেখে ইনকাম
+        </button>
+        <button class="menu-item btn-daily" onclick="claimDaily()">
+            <span>🎁</span> ডেইলি বোনাস
+        </button>
+        <button class="menu-item btn-refer" onclick="showRefer()">
+            <span>👥</span> রেফার করুন
+        </button>
+        <button class="menu-item btn-withdraw" onclick="showWithdraw()">
+            <span>💸</span> টাকা উত্তোলন
+        </button>
+        <button class="menu-item btn-profile" onclick="showProfile()">
+            <span>👤</span> প্রোফাইল
+        </button>
+    </div>
+</div>
 
-        // ডাটা লোড করা
-        function fetchUserData() {
-            document.getElementById('user-greeting').innerText = "হ্যালো, " + tg.initDataUnsafe.user.first_name;
-            fetch(`${apiBase}/api/user/${userId}`)
-                .then(res => res.json())
-                .then(data => {
-                    if(data.balance !== undefined) {
-                        document.getElementById('user-balance').innerText = data.balance.toFixed(2);
-                    }
-                });
-        }
-        fetchUserData();
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const userId = tg.initDataUnsafe.user.id;
+    const apiBase = "https://earn-money-bd.onrender.com";
 
-        // বিজ্ঞাপন দেখানো এবং রিওয়ার্ড দেওয়া
-        function playAd() {
-            // আপনার Rewarded Ad কোড
-            show_11003133().then(() => {
-                // বিজ্ঞাপন শেষ হলে রিয়াল-টাইম আপডেট
-                rewardUser(0.50); 
-            }).catch(e => {
-                alert("বিজ্ঞাপন লোড হয়নি, আবার চেষ্টা করুন।");
-            });
-        }
-
-        function rewardUser(amount) {
-            fetch(`${apiBase}/api/add-balance`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatId: userId, amount: amount })
-            })
+    // ইউজারের ডাটা লোড করা
+    function loadUser() {
+        document.getElementById('display-name').innerText = "স্বাগতম, " + tg.initDataUnsafe.user.first_name;
+        fetch(`${apiBase}/api/user/${userId}`)
             .then(res => res.json())
             .then(data => {
-                if(data.success) {
-                    document.getElementById('user-balance').innerText = data.newBalance.toFixed(2);
-                    tg.showAlert("অভিনন্দন! আপনি ০.৫০ টাকা আয় করেছেন।");
+                if(data.balance !== undefined) {
+                    document.getElementById('balance-val').innerText = data.balance.toFixed(2);
                 }
             });
+    }
+    loadUser();
+
+    // ১. ভিডিও দেখে ইনকাম (Real-Time)
+    function watchAd() {
+        if (typeof show_11003133 === 'function') {
+            show_11003133().then(() => {
+                // বিজ্ঞাপন শেষ হলে ০.৫০ টাকা যোগ হবে
+                updateDatabase(0.50, "অভিনন্দন! আপনি ০.৫০ টাকা পেয়েছেন।");
+            }).catch(err => {
+                tg.showAlert("এই মুহূর্তে কোনো বিজ্ঞাপন নেই। একটু পরে চেষ্টা করুন।");
+            });
+        } else {
+            tg.showAlert("অ্যাড স্ক্রিপ্ট লোড হচ্ছে, দয়া করে অপেক্ষা করুন।");
         }
-    </script>
+    }
+
+    // ২. ডাটাবেস আপডেট ফাংশন
+    function updateDatabase(amount, successMsg) {
+        fetch(`${apiBase}/api/add-balance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: userId, amount: amount })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('balance-val').innerText = data.newBalance.toFixed(2);
+                tg.showAlert(successMsg);
+            }
+        });
+    }
+
+    // ৩. ডেইলি বোনাস
+    function claimDaily() {
+        tg.showAlert("আপনি আজকের ডেইলি বোনাস হিসেবে ১.০০ টাকা পেয়েছেন!");
+        updateDatabase(1.00, "বোনাস সফলভাবে যোগ হয়েছে।");
+    }
+
+    // ৪. রেফার সিস্টেম
+    function showRefer() {
+        const botUsername = "আপনার_বটের_ইউজারনেম"; // এখানে আপনার বটের ইউজারনেম দিন (@ চিহ্ন ছাড়া)
+        const link = `https://t.me/${botUsername}?start=${userId}`;
+        tg.showAlert(`আপনার রেফার লিঙ্ক:\n${link}\n\nপ্রতি রেফারে পাবেন ২.০০ টাকা!`);
+    }
+
+    // ৫. উইথড্র বাটন
+    function showWithdraw() {
+        tg.showConfirm("আপনি কি টাকা উত্তোলন করতে চান? (মিনিমাম ৫০ টাকা)");
+    }
+
+    // ৬. প্রোফাইল বাটন
+    function showProfile() {
+        const info = `নাম: ${tg.initDataUnsafe.user.first_name}\nআইডি: ${userId}\nস্ট্যাটাস: একটিভ`;
+        tg.showAlert(info);
+    }
+
+</script>
 </body>
 </html>
