@@ -12,15 +12,24 @@ const mongoURI = 'mongodb+srv://admin:bot1234@cluster0.i8iqhvl.mongodb.net/?appN
 const bot = new TelegramBot(token, { polling: true });
 
 mongoose.connect(mongoURI)
-    .then(() => console.log("Real-Time DB Connected Successfully!"))
+    .then(() => console.log("Premium Real-Time DB Connected Successfully!"))
     .catch(err => console.error("DB Connection Error:", err));
 
+// ডাটাবেস স্কিমা (ইউজার ও হিস্ট্রি ট্র্যাকিং)
 const userSchema = new mongoose.Schema({
     chatId: { type: Number, unique: true },
     name: String,
     balance: { type: Number, default: 0.00 }
 });
 const User = mongoose.model('User', userSchema);
+
+const historySchema = new mongoose.Schema({
+    chatId: Number,
+    type: String,
+    amount: Number,
+    date: { type: Date, default: Date.now }
+});
+const History = mongoose.model('History', historySchema);
 
 // API: ইউজারের তথ্য দেখা
 app.get('/api/user/:id', async (req, res) => {
@@ -30,49 +39,66 @@ app.get('/api/user/:id', async (req, res) => {
     } catch (e) { res.status(500).send(e); }
 });
 
-// API: সাধারণ ব্যালেন্স যোগ
+// API: সাধারণ ব্যালেন্স যোগ (ডেইলি রিওয়ার্ড/রেফার)
 app.post('/api/add-balance', async (req, res) => {
-    const { chatId, amount } = req.body;
+    const { chatId, amount, type } = req.body;
     try {
         const user = await User.findOneAndUpdate(
             { chatId: chatId },
             { $inc: { balance: amount } },
             { new: true, upsert: true }
         );
+        // ট্রানজেকশন হিস্ট্রি সেভ করা
+        await History.create({ chatId, type: type || "Bonus", amount });
         res.json({ success: true, newBalance: user.balance });
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// API: মনিটেগ পোস্টব্যাক
-app.get('/api/postback', async (req, res) => {
-    const { chatId, amount } = req.query;
-    if (!chatId) return res.status(400).send("Missing Chat ID");
+// API: ট্রানজেকশন হিস্ট্রি দেখা
+app.get('/api/history/:id', async (req, res) => {
     try {
+        const list = await History.find({ chatId: req.params.id }).sort({ date: -1 }).limit(15);
+        res.json(list);
+    } catch (e) { res.status(500).send(e); }
+});
+
+// API: মনিটেগ সিকিউরড সার্ভার-সাইড পোস্টব্যাক
+app.get('/api/postback', async (req, res) => {
+    const { ymid, estimated_price } = req.query;
+    if (!ymid) return res.status(400).send("Missing ymid");
+
+    try {
+        const reward = 0.20;
         const user = await User.findOneAndUpdate(
-            { chatId: parseInt(chatId) },
-            { $inc: { balance: parseFloat(amount) } },
+            { chatId: parseInt(ymid) },
+            { $inc: { balance: reward } },
             { new: true }
         );
-        if (user) { res.status(200).send("OK"); } else { res.status(404).send("User Not Found"); }
-    } catch (err) { res.status(500).send("Error"); }
+
+        if (user) {
+            // বিজ্ঞাপনের হিস্ট্রি ডাটাবেসে সেভ করা
+            await History.create({ chatId: parseInt(ymid), type: "Watched Ad", amount: reward });
+            console.log(`[MONETAG] Verified ৳0.20 added to ${ymid}. Est: $${estimated_price || 0}`);
+            return res.status(200).send("OK");
+        } else {
+            return res.status(404).send("User Not Found");
+        }
+    } catch (err) { return res.status(500).send("Error"); }
 });
 
 // রিয়্যাল-টাইম রেফারেল ট্র্যাকিং সিস্টেম
-bot.onText(/\/start(?: (.+))?/, async (msg, match) => {
+bot.onText(/\/startHeader(?: (.+))?/, async (msg, match) => {
     const chatId = msg.chat.id;
-    const referrerId = match[1]; // লিঙ্ক থেকে রেফারার আইডি বের করা
+    const referrerId = match[1];
 
-    // ইউজার আগে থেকে ডাটাবেসে আছে কি না চেক করা
     const existingUser = await User.findOne({ chatId });
 
     if (!existingUser) {
-        // নতুন ইউজার তৈরি করা
         await User.create({ chatId, name: msg.from.first_name, balance: 0.00 });
 
-        // যদি ইউজার কারো রেফার লিঙ্কের মাধ্যমে এসে থাকে
         if (referrerId && parseInt(referrerId) !== chatId) {
             const refId = parseInt(referrerId);
-            const referBonus = 2.00; // প্রতি রেফারে ২ টাকা বোনাস
+            const referBonus = 2.00;
 
             const referrer = await User.findOneAndUpdate(
                 { chatId: refId },
@@ -81,15 +107,15 @@ bot.onText(/\/start(?: (.+))?/, async (msg, match) => {
             );
 
             if (referrer) {
-                // যে রেফার করেছে তাকে বটে মেসেজ পাঠানো
+                await History.create({ chatId: refId, type: "Referral Bonus", amount: referBonus });
                 bot.sendMessage(refId, `🔔 আপনার রেফার লিঙ্কের মাধ্যমে ${msg.from.first_name} জয়েন করেছে! আপনি পেয়েছেন ৳${referBonus.toFixed(2)}`);
             }
         }
     }
 
-    bot.sendMessage(chatId, `স্বাগতম ${msg.from.first_name}! নিচে ক্লিক করে ইনকাম শুরু করুন।`, {
+    bot.sendMessage(chatId, `স্বাগতম ${msg.from.first_name}! নিচে ক্লিক করে প্রিমিয়াম অ্যাপে ইনকাম শুরু করুন।`, {
         reply_markup: {
-            inline_keyboard: [[{ text: "💰 ওপেন অ্যাপ", web_app: { url: 'https://ssk079328-spec.github.io/Earn-Money-BD/' } }]]
+            inline_keyboard: [[{ text: "🚀 ওপেন অ্যাপ", web_app: { url: 'https://ssk079328-spec.github.io/Earn-Money-BD/' } }]]
         }
     });
 });
