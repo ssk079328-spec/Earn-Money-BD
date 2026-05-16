@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Earn Money BD - Addictive Premium Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <script src='//libtl.com/sdk.js' data-zone='11003133' data-sdk='show_11003133'></script>
 
     <style>
@@ -30,7 +31,7 @@
 
         .container { padding: 15px; max-width: 450px; margin: auto; padding-bottom: 30px; }
 
-        /* ব্যানার অ্যাড কন্টেইনার (প্রতিটি পেজের উপরে ও নিচে থাকবে) */
+        /* ব্যানার অ্যাড বক্স স্টাইল */
         .ad-box {
             width: 100%; overflow-x: auto; background: #111827; padding: 8px 0;
             display: flex; justify-content: center; border-radius: 14px; margin: 12px 0; 
@@ -48,7 +49,7 @@
         .user-meta .name { font-size: 15px; font-weight: 700; color: #fff; }
         .user-meta .badge { font-size: 11px; color: var(--accent-green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
 
-        /* প্রফেশনাল ব্যালেন্স কার্ড */
+        /* ব্যালেন্স কার্ড */
         .balance-card { 
             background: var(--card-gradient); border-radius: 24px; padding: 28px 20px; 
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255,255,255,0.1); 
@@ -62,7 +63,7 @@
         .bal-title { font-size: 11px; color: #a5b4fc; letter-spacing: 2px; font-weight: 600; }
         .bal-amount { font-size: 44px; font-weight: 900; color: #fff; margin: 6px 0; text-shadow: 0 4px 12px rgba(99,102,241,0.3); }
 
-        /* অ্যাডিক্টিভ বাটন ইন্টারফেস */
+        /* বাটন গ্রিড */
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
         .action-btn { 
@@ -72,11 +73,10 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-        .action-btn:shadow-hover { border-color: #6366f1; }
-        .action-btn:active { transform: scale(0.94); background: #1e293b; }
+        .action-btn:active { transform: scale(0.94); background: #1e293b; border-color: #6366f1; }
         .action-btn .icon-circle { width: 44px; height: 44px; background: rgba(255,255,255,0.03); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid var(--border); }
 
-        /* মেইন ক্লেইম বাটন (সবচেয়ে আকর্ষণীয়) */
+        /* শাইনিং ক্লেইম বাটন */
         .btn-claim-main { 
             grid-column: span 2; background: var(--btn-gradient); border: none; font-size: 17px; padding: 20px; letter-spacing: 0.5px;
             box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35); color: white; position: relative; overflow: hidden;
@@ -88,7 +88,7 @@
         }
         @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
 
-        /* ডায়নামিক পেজ ভিউয়ার (SPA সিস্টেম) */
+        /* পেজ রাউটিং */
         .app-page { display: none; }
         .app-page.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -96,7 +96,7 @@
         .back-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
         .btn-back { background: var(--glass); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 12px; font-weight: 600; cursor: pointer; }
 
-        /* উইথড্র পেজ গেটওয়ে */
+        /* উইথড্র গেটওয়ে */
         .gateway-card {
             background: #111726; border: 1px solid var(--border); border-radius: 18px; padding: 15px; margin-bottom: 12px;
             display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s;
@@ -117,11 +117,17 @@
         .hist-date { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
         .hist-amount { font-weight: 700; font-size: 15px; }
         .amount-plus { color: var(--accent-green); }
-        .amount-minus { color: #f43f5e; }
 
-        /* প্রোফাইল প্রোগ্রেস বার */
+        /* সাপোর্ট ও প্রোফাইল কার্ড */
+        .support-card {
+            background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid #334155;
+            border-radius: 18px; padding: 16px; text-align: left; margin-top: 15px;
+        }
+        .support-title { font-size: 14px; font-weight: 700; color: #a855f7; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;}
+        .support-info { font-size: 13px; color: #cbd5e1; margin: 4px 0; }
+
         .xp-container { background: #161d30; border-radius: 12px; height: 8px; width: 100%; margin-top: 8px; overflow: hidden; border: 1px solid var(--border); }
-        .xp-bar { background: var(--btn-gradient); height: 100%; width: 45%; border-radius: 12px; transition: width 0.5s ease; }
+        .xp-bar { background: var(--btn-gradient); height: 100%; width: 45%; border-radius: 12px; }
     </style>
 </head>
 <body>
@@ -130,7 +136,7 @@
     function renderBannerAd() {
         document.write(`
             <div class="ad-box">
-                <iframe src="about:blank" style="width:728px;height:90px;border:none;overflow:hidden;" id="ad-frame-${Math.random().toString(36).substr(2, 5)}"></iframe>
+                <iframe src="about:blank" style="width:100%;max-width:728px;height:90px;border:none;overflow:hidden;" id="ad-frame-${Math.random().toString(36).substr(2, 5)}"></iframe>
                 <script>
                     setTimeout(() => {
                         const frames = document.getElementsByTagName('iframe');
@@ -153,7 +159,7 @@
             <img id="user-avatar" class="profile-pic" src="" alt="👤">
             <div class="user-meta">
                 <span id="u-name" class="name">Loading...</span>
-                <span class="badge">💎 Pro Member</span>
+                <span class="badge">💎 Verified Earner</span>
             </div>
         </div>
 
@@ -252,27 +258,30 @@
             <h3>Account Analytics</h3>
         </div>
 
-        <div class="premium-card" style="background:#111726; border-color:var(--border);">
-            <img id="prof-avatar" style="width:80px; height:80px; border-radius:50%; border:3px solid #a855f7; margin-bottom:12px;" src="" alt="Avatar">
+        <div class="balance-card" style="background:#111726; border-color:var(--border);">
+            <img id="prof-avatar" style="width:75px; height:75px; border-radius:50%; border:3px solid #a855f7; margin-bottom:12px;" src="" alt="Avatar">
             <h4 id="prof-name" style="margin:0;">User</h4>
             <p style="font-size:12px; color:var(--text-muted); margin:4px 0 15px 0;">ID: <span id="prof-id">00000000</span></p>
             
             <div style="text-align:left; font-size:13px;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                    <span>Level 3 (Super Earner)</span>
-                    <span style="color:#a855f7;">75% XP</span>
+                    <span>Level 3 (Gold Earner)</span>
+                    <span style="color:#a855f7;">60% XP</span>
                 </div>
-                <div class="xp-container"><div class="xp-bar" style="width: 75%;"></div></div>
+                <div class="xp-container"><div class="xp-bar" style="width: 60%;"></div></div>
             </div>
         </div>
 
-        <div class="history-item">
-            <div class="hist-type">Account Status</div>
-            <div class="hist-amount amount-plus">Verified Premium ✅</div>
+        <div class="support-card">
+            <div class="support-title">⚙️ Official Admin Support</div>
+            <div class="support-info"><strong>Admin Name:</strong> Najmul hoque Forhad</div>
+            <div class="support-info"><strong>Helpline Phone:</strong> 01913621510</div>
+            <div class="support-info"><strong>Email Address:</strong> najmulh219653@gmail.com</div>
         </div>
-        <div class="history-item">
-            <div class="hist-type">Server Network</div>
-            <div class="hist-amount" style="color:#6366f1;">Cloud Connected ⚡</div>
+
+        <div class="history-item" style="margin-top: 15px;">
+            <div class="hist-type">Account Status</div>
+            <div class="hist-amount amount-plus">Verified ✅</div>
         </div>
     </div>
     <script>renderBannerAd();</script>
@@ -287,10 +296,11 @@
     const userId = tg.initDataUnsafe.user.id;
     const apiBase = "https://earn-money-bd.onrender.com";
 
-    // মনিটেগ ব্যাকগ্রাউন্ড অটো-ইন্টারস্টিশিয়াল লজিক
-    show_11003133({ type: 'inApp', inAppSettings: { frequency: 1, capping: 0.5, interval: 60, timeout: 10 } });
+    // মনিটেগ অটো ইন-অ্যাপ ইন্টারস্টিশিয়াল ট্রিগার
+    if (typeof show_11003133 === 'function') {
+        show_11003133({ type: 'inApp', inAppSettings: { frequency: 1, capping: 0.5, interval: 60, timeout: 10 } });
+    }
 
-    // পেজ রাউটার মেথড
     function switchPage(pageId) {
         document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
@@ -318,15 +328,15 @@
     function watchAd() {
         if (typeof show_11003133 === 'function') {
             show_11003133({ ymid: userId }).then(() => {
-                tg.showAlert("বিজ্ঞাপন দেখা সম্পন্ন! মনিটেগ সার্ভার ভেরিফিকেশন সাপেক্ষে ২০ পয়সা কিছুক্ষণের মধ্যে ব্যালেন্সে যোগ হবে।");
+                tg.showAlert("বিজ্ঞাপন ক্লোজ হয়েছে! মনিটেগ সার্ভার নিশ্চিত করলেই ব্যালেন্স যোগ হবে।");
                 setTimeout(load, 4000); 
-            }).catch(() => tg.showAlert("অ্যাড লোড হয়নি, আবার ট্রাই করুন।"));
+            }).catch(() => tg.showAlert("বিজ্ঞাপন লোড হচ্ছে না, আবার চেষ্টা করুন।"));
         }
     }
 
     function claimDaily() {
         const last = localStorage.getItem('c_'+userId);
-        if (last && (Date.now() - last) < 86400000) return tg.showAlert("আজকের বোনাস নেওয়া হয়ে গেছে! আগামীকাল আবার আসুন।");
+        if (last && (Date.now() - last) < 86400000) return tg.showAlert("আজকের বোনাস নেওয়া শেষ! আগামীকাল আবার ট্রাই করুন।");
         localStorage.setItem('c_'+userId, Date.now());
         
         fetch(`${apiBase}/api/add-balance`, {
@@ -339,7 +349,7 @@
     function shareRefer() {
         const link = `https://t.me/Emoneybd_Bot?start=${userId}`;
         navigator.clipboard.writeText(link);
-        tg.showAlert("আপনার ইনভাইট লিংক কপি হয়েছে! শেয়ার করুন:\n" + link);
+        tg.showAlert("আপনার ইনভাইট লিংক কপি হয়েছে:\n" + link);
     }
 
     function processWithdraw(method) {
@@ -347,8 +357,8 @@
             title: method + ' Cashout',
             message: 'আপনার ওয়ালেট নম্বর এবং উইথড্র পরিমাণ সাবমিট করুন।',
             buttons: [{id: 'ok', type: 'default', text: 'প্রোসেস করুন'}]
-        }, (buttonId) => {
-            tg.showAlert("উইথড্র সিস্টেমটি সচল করতে এডমিনের সাথে যোগাযোগ করুন অথবা পরবর্তী আপডেটের জন্য অপেক্ষা করুন।");
+        }, () => {
+            tg.showAlert(`পেমেন্ট সাপোর্ট ডিপার্টমেন্ট:\nনাম: Najmul hoque Forhad\nফোন: 01913621510\nসরাসরি এডমিনের সাথে যোগাযোগ করুন।`);
         });
     }
 
@@ -369,7 +379,7 @@
                 </div>
             `).join('');
         }).catch(() => {
-            document.getElementById('history-list').innerHTML = `<div style="color:var(--text-muted); padding:20px;">হিস্ট্রি লোড করতে সমস্যা হচ্ছে।</div>`;
+            document.getElementById('history-list').innerHTML = `<div style="color:var(--text-muted); padding:20px;">হিস্ট্রি লোড করা যাচ্ছে না।</div>`;
         });
     }
 </script>
