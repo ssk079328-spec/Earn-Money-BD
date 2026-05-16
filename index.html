@@ -3,140 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Money BD - Premium Pro</title>
+    <title>Earn Money BD - Addictive Premium Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src='//libtl.com/sdk.js' data-zone='11003133' data-sdk='show_11003133'></script>
 
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-gradient: linear-gradient(135deg, #1e1b4b, #311042);
+            --bg-dark: #090d16;
+            --card-gradient: linear-gradient(135deg, #1e1b4b, #2e1065);
             --btn-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+            --accent-green: #10b981;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --text-muted: #64748b;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         body { 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
             background-color: var(--bg-dark); 
             color: var(--text-main);
-            margin: 0; padding: 0; 
+            margin: 0; padding: 0;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
-        .container { padding: 15px; max-width: 450px; margin: auto; box-sizing: border-box; }
+        .container { padding: 15px; max-width: 450px; margin: auto; padding-bottom: 30px; }
 
-        .ad-container {
-            width: 100%; overflow-x: auto; background: #1e293b; padding: 10px 0;
-            display: flex; justify-content: center; border-radius: 12px; margin: 15px 0; border: 1px solid #334155;
+        /* ব্যানার অ্যাড কন্টেইনার (প্রতিটি পেজের উপরে ও নিচে থাকবে) */
+        .ad-box {
+            width: 100%; overflow-x: auto; background: #111827; padding: 8px 0;
+            display: flex; justify-content: center; border-radius: 14px; margin: 12px 0; 
+            border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .ad-container::-webkit-scrollbar { display: none; }
+        .ad-box::-webkit-scrollbar { display: none; }
 
-        /* প্রোফাইল হেডার স্টাইল */
+        /* প্রোফাইল হেডার */
         .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 12px 20px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; align-items: center; gap: 12px; background: var(--glass);
+            padding: 12px 16px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 15px;
         }
+        .profile-pic { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #6366f1; background: #1e293b; }
+        .user-meta { display: flex; flex-direction: column; text-align: left; }
+        .user-meta .name { font-size: 15px; font-weight: 700; color: #fff; }
+        .user-meta .badge { font-size: 11px; color: var(--accent-green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
 
-        .profile-pic {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #6366f1;
-            background: #1e293b;
+        /* প্রফেশনাল ব্যালেন্স কার্ড */
+        .balance-card { 
+            background: var(--card-gradient); border-radius: 24px; padding: 28px 20px; 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255,255,255,0.1); 
+            text-align: center; margin-bottom: 20px; border: 1px solid #4338ca; position: relative;
+            overflow: hidden;
         }
-
-        .user-info-text { display: flex; flex-direction: column; text-align: left; }
-        .user-info-text .name { font-size: 16px; font-weight: 600; color: #fff; }
-        .user-info-text .status { font-size: 12px; color: #10b981; }
-
-        /* ব্যালেন্স কার্ড */
-        .premium-card { 
-            background: var(--card-gradient); border-radius: 24px; padding: 25px 20px; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); text-align: center; margin-bottom: 20px; border: 1px solid #4338ca;
+        .balance-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 60%); pointer-events: none;
         }
-        .balance-display { font-size: 42px; font-weight: 800; color: #fff; margin-top: 5px; }
+        .bal-title { font-size: 11px; color: #a5b4fc; letter-spacing: 2px; font-weight: 600; }
+        .bal-amount { font-size: 44px; font-weight: 900; color: #fff; margin: 6px 0; text-shadow: 0 4px 12px rgba(99,102,241,0.3); }
 
-        /* গ্রিড ও বাটন */
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .premium-btn { 
-            background: #1e293b; border: 1px solid #334155; padding: 18px; border-radius: 18px; 
-            font-weight: 600; font-size: 14px; color: var(--text-main); cursor: pointer; 
+        /* অ্যাডিক্টিভ বাটন ইন্টারফেস */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
+        .action-btn { 
+            background: #111726; border: 1px solid var(--border); padding: 16px; border-radius: 20px; 
+            font-weight: 700; font-size: 14px; color: var(--text-main); cursor: pointer; 
             display: flex; flex-direction: column; align-items: center; gap: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-        .premium-btn:active { transform: scale(0.96); background: #334155; }
-        .premium-btn-main { grid-column: span 2; background: var(--btn-gradient); border: none; font-size: 18px; padding: 22px; font-weight: 700; }
+        .action-btn:shadow-hover { border-color: #6366f1; }
+        .action-btn:active { transform: scale(0.94); background: #1e293b; }
+        .action-btn .icon-circle { width: 44px; height: 44px; background: rgba(255,255,255,0.03); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid var(--border); }
+
+        /* মেইন ক্লেইম বাটন (সবচেয়ে আকর্ষণীয়) */
+        .btn-claim-main { 
+            grid-column: span 2; background: var(--btn-gradient); border: none; font-size: 17px; padding: 20px; letter-spacing: 0.5px;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35); color: white; position: relative; overflow: hidden;
+        }
+        .btn-claim-main::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
+
+        /* ডায়নামিক পেজ ভিউয়ার (SPA সিস্টেম) */
+        .app-page { display: none; }
+        .app-page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .back-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .btn-back { background: var(--glass); border: 1px solid var(--border); color: #fff; padding: 8px 14px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+
+        /* উইথড্র পেজ গেটওয়ে */
+        .gateway-card {
+            background: #111726; border: 1px solid var(--border); border-radius: 18px; padding: 15px; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s;
+        }
+        .gateway-card:active { background: #1e293b; transform: scale(0.98); }
+        .gateway-info { display: flex; align-items: center; gap: 12px; }
+        .gateway-logo { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; background: #fff; }
+        .gateway-name { font-weight: 700; font-size: 16px; }
+        .gateway-limit { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .btn-select { background: var(--btn-gradient); border: none; color: #fff; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+
+        /* হিস্ট্রি লিস্ট */
+        .history-item {
+            background: var(--glass); border: 1px solid var(--border); padding: 14px; border-radius: 16px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+        }
+        .hist-type { font-weight: 600; font-size: 14px; text-align: left; }
+        .hist-date { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+        .hist-amount { font-weight: 700; font-size: 15px; }
+        .amount-plus { color: var(--accent-green); }
+        .amount-minus { color: #f43f5e; }
+
+        /* প্রোফাইল প্রোগ্রেস বার */
+        .xp-container { background: #161d30; border-radius: 12px; height: 8px; width: 100%; margin-top: 8px; overflow: hidden; border: 1px solid var(--border); }
+        .xp-bar { background: var(--btn-gradient); height: 100%; width: 45%; border-radius: 12px; transition: width 0.5s ease; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    
-    <div class="ad-container">
-        <script>
-          atOptions = { 'key' : 'ce39fd4725a124df25bc9e7a152fd622', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-        </script>
-        <script src="https://www.highperformanceformat.com/ce39fd4725a124df25bc9e7a152fd622/invoke.js"></script>
-    </div>
+<script>
+    function renderBannerAd() {
+        document.write(`
+            <div class="ad-box">
+                <iframe src="about:blank" style="width:728px;height:90px;border:none;overflow:hidden;" id="ad-frame-${Math.random().toString(36).substr(2, 5)}"></iframe>
+                <script>
+                    setTimeout(() => {
+                        const frames = document.getElementsByTagName('iframe');
+                        const lastFrame = frames[frames.length - 1];
+                        const doc = lastFrame.contentDocument || lastFrame.contentWindow.document;
+                        doc.open();
+                        doc.write('<body style="margin:0;padding:0;display:flex;justify-content:center;"><script>atOptions = {\'key\' : \'ce39fd4725a124df25bc9e7a152fd622\',\'format\' : \'iframe\',\'height\' : 90,\'width\' : 728,\'params\' : {}};<\\/script><script src="https://www.highperformanceformat.com/ce39fd4725a124df25bc9e7a152fd622/invoke.js"><\\/script></body>');
+                        doc.close();
+                    }, 100);
+                <\/script>
+            </div>
+        `);
+    }
+</script>
 
-    <div class="profile-header">
-        <img id="user-avatar" class="profile-pic" src="" alt="👤">
-        <div class="user-info-text">
-            <span id="u-name" class="name">Loading...</span>
-            <span class="status">● Active Member</span>
+<div id="page-main" class="app-page active">
+    <script>renderBannerAd();</script>
+    <div class="container">
+        <div class="profile-header">
+            <img id="user-avatar" class="profile-pic" src="" alt="👤">
+            <div class="user-meta">
+                <span id="u-name" class="name">Loading...</span>
+                <span class="badge">💎 Pro Member</span>
+            </div>
+        </div>
+
+        <div class="balance-card">
+            <div class="bal-title">AVAILABLE BALANCE</div>
+            <div class="bal-amount">৳ <span id="bal">0.00</span></div>
+        </div>
+
+        <div class="menu-grid">
+            <button class="action-btn btn-claim-main" onclick="watchAd()">
+                <div class="icon-circle">📺</div> WATCH AD & EARN (৳0.20)
+            </button>
+            <button class="action-btn" onclick="claimDaily()">
+                <div class="icon-circle">🎁</div> Daily Reward
+            </button>
+            <button class="action-btn" onclick="shareRefer()">
+                <div class="icon-circle">🔗</div> Invite Link
+            </button>
+            <button class="action-btn" onclick="switchPage('page-withdraw')">
+                <div class="icon-circle">💳</div> Withdraw
+            </button>
+            <button class="action-btn" onclick="switchPage('page-history')">
+                <div class="icon-circle">📜</div> History
+            </button>
+            <button class="action-btn" onclick="switchPage('page-profile')" style="grid-column: span 2;">
+                <div class="icon-circle">👤</div> Advance Profile View
+            </button>
         </div>
     </div>
+    <script>renderBannerAd();</script>
+</div>
 
-    <div class="premium-card">
-        <div style="font-size: 12px; color: var(--text-muted); letter-spacing: 2px;">AVAILABLE BALANCE</div>
-        <div class="balance-display">৳ <span id="bal">0.00</span></div>
+<div id="page-withdraw" class="app-page">
+    <script>renderBannerAd();</script>
+    <div class="container">
+        <div class="back-header">
+            <button class="btn-back" onclick="switchPage('page-main')">← Back</button>
+            <h3>Cashout Gateway</h3>
+        </div>
+
+        <div class="gateway-card" onclick="processWithdraw('Bkash')">
+            <div class="gateway-info">
+                <img class="gateway-logo" src="https://raw.githubusercontent.com/w3-tech/bKash-Merchant-API-Integration-Guide/main/bkash_logo.png" alt="B">
+                <div style="text-align:left;">
+                    <div class="gateway-name">bKash Personal</div>
+                    <div class="gateway-limit">Min Withdraw: ৳৫০.০০</div>
+                </div>
+            </div>
+            <button class="btn-select">Select</button>
+        </div>
+
+        <div class="gateway-card" onclick="processWithdraw('Nagad')">
+            <div class="gateway-info">
+                <img class="gateway-logo" src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="N">
+                <div style="text-align:left;">
+                    <div class="gateway-name">Nagad Personal</div>
+                    <div class="gateway-limit">Min Withdraw: ৳৫০.০০</div>
+                </div>
+            </div>
+            <button class="btn-select">Select</button>
+        </div>
+
+        <div class="gateway-card" onclick="processWithdraw('Rocket')">
+            <div class="gateway-info">
+                <img class="gateway-logo" src="https://www.logo.wine/a/logo/DBBL_Rocket/DBBL_Rocket-Logo.wine.svg" alt="R">
+                <div style="text-align:left;">
+                    <div class="gateway-name">Rocket Personal</div>
+                    <div class="gateway-limit">Min Withdraw: ৳৫০.০০</div>
+                </div>
+            </div>
+            <button class="btn-select">Select</button>
+        </div>
     </div>
+    <script>renderBannerAd();</script>
+</div>
 
-    <div class="action-grid">
-        <button class="premium-btn premium-btn-main" onclick="watchAd()">
-            <span>📺</span> WATCH AD & EARN (৳0.20)
-        </button>
-        <button class="premium-btn" onclick="claimDaily()"><span>🎁</span> Daily Reward</button>
-        <button class="premium-btn" onclick="shareRefer()"><span>🔗</span> Invite Link</button>
-        <button class="premium-btn" onclick="tg.showAlert('মিনিমাম উইথড্র ৫০ টাকা।')"><span>💳</span> Withdraw</button>
-        <button class="premium-btn" onclick="showProfile()"><span>👤</span> My Profile</button>
+<div id="page-history" class="app-page">
+    <script>renderBannerAd();</script>
+    <div class="container">
+        <div class="back-header">
+            <button class="btn-back" onclick="switchPage('page-main')">← Back</button>
+            <h3>Statement History</h3>
+        </div>
+        <div id="history-list">
+            <div style="color:var(--text-muted); padding:20px;">কোনো ট্রানজেকশন রেকর্ড পাওয়া যায়নি।</div>
+        </div>
     </div>
+    <script>renderBannerAd();</script>
+</div>
 
-    <div class="ad-container">
-        <script>
-          atOptions = { 'key' : 'ce39fd4725a124df25bc9e7a152fd622', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-        </script>
-        <script src="https://www.highperformanceformat.com/ce39fd4725a124df25bc9e7a152fd622/invoke.js"></script>
+<div id="page-profile" class="app-page">
+    <script>renderBannerAd();</script>
+    <div class="container">
+        <div class="back-header">
+            <button class="btn-back" onclick="switchPage('page-main')">← Back</button>
+            <h3>Account Analytics</h3>
+        </div>
+
+        <div class="premium-card" style="background:#111726; border-color:var(--border);">
+            <img id="prof-avatar" style="width:80px; height:80px; border-radius:50%; border:3px solid #a855f7; margin-bottom:12px;" src="" alt="Avatar">
+            <h4 id="prof-name" style="margin:0;">User</h4>
+            <p style="font-size:12px; color:var(--text-muted); margin:4px 0 15px 0;">ID: <span id="prof-id">00000000</span></p>
+            
+            <div style="text-align:left; font-size:13px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span>Level 3 (Super Earner)</span>
+                    <span style="color:#a855f7;">75% XP</span>
+                </div>
+                <div class="xp-container"><div class="xp-bar" style="width: 75%;"></div></div>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div class="hist-type">Account Status</div>
+            <div class="hist-amount amount-plus">Verified Premium ✅</div>
+        </div>
+        <div class="history-item">
+            <div class="hist-type">Server Network</div>
+            <div class="hist-amount" style="color:#6366f1;">Cloud Connected ⚡</div>
+        </div>
     </div>
-
+    <script>renderBannerAd();</script>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.backgroundColor = '#0f172a';
-    tg.headerColor = '#0f172a';
+    tg.backgroundColor = '#090d16';
+    tg.headerColor = '#090d16';
     
     const userId = tg.initDataUnsafe.user.id;
     const apiBase = "https://earn-money-bd.onrender.com";
 
+    // মনিটেগ ব্যাকগ্রাউন্ড অটো-ইন্টারস্টিশিয়াল লজিক
+    show_11003133({ type: 'inApp', inAppSettings: { frequency: 1, capping: 0.5, interval: 60, timeout: 10 } });
+
+    // পেজ রাউটার মেথড
+    function switchPage(pageId) {
+        document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        if(pageId === 'page-history') loadHistory();
+    }
+
     function load() {
-        // রিয়্যাল-টাইম নাম ও প্রোফাইল পিকচার লোড করা
         const user = tg.initDataUnsafe.user;
-        document.getElementById('u-name').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+        const fullName = user.first_name + (user.last_name ? " " + user.last_name : "");
         
-        // যদি ইউজারের প্রোফাইল পিকচার থাকে তবে সেটি দেখাবে, না থাকলে ডিফল্ট অবতার আইকন
-        if(user.photo_url) {
-            document.getElementById('user-avatar').src = user.photo_url;
-        } else {
-            document.getElementById('user-avatar').src = "https://api.dicebear.com/7.x/bottts/svg?seed=" + userId;
-        }
+        document.getElementById('u-name').innerText = fullName;
+        document.getElementById('prof-name').innerText = fullName;
+        document.getElementById('prof-id').innerText = userId;
+        
+        const avatarUrl = user.photo_url || "https://api.dicebear.com/7.x/bottts/svg?seed=" + userId;
+        document.getElementById('user-avatar').src = avatarUrl;
+        document.getElementById('prof-avatar').src = avatarUrl;
 
         fetch(`${apiBase}/api/user/${userId}`).then(r => r.json()).then(d => {
             document.getElementById('bal').innerText = d.balance.toFixed(2);
@@ -147,32 +318,59 @@
     function watchAd() {
         if (typeof show_11003133 === 'function') {
             show_11003133({ ymid: userId }).then(() => {
-                tg.showAlert("বিজ্ঞাপন দেখা সফল হয়েছে!");
+                tg.showAlert("বিজ্ঞাপন দেখা সম্পন্ন! মনিটেগ সার্ভার ভেরিফিকেশন সাপেক্ষে ২০ পয়সা কিছুক্ষণের মধ্যে ব্যালেন্সে যোগ হবে।");
                 setTimeout(load, 4000); 
-            });
+            }).catch(() => tg.showAlert("অ্যাড লোড হয়নি, আবার ট্রাই করুন।"));
         }
     }
 
     function claimDaily() {
         const last = localStorage.getItem('c_'+userId);
-        if (last && (Date.now() - last) < 86400000) return tg.showAlert("আগামীকাল আবার চেষ্টা করুন।");
+        if (last && (Date.now() - last) < 86400000) return tg.showAlert("আজকের বোনাস নেওয়া হয়ে গেছে! আগামীকাল আবার আসুন।");
         localStorage.setItem('c_'+userId, Date.now());
         
         fetch(`${apiBase}/api/add-balance`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chatId: userId, amount: 1.0 })
-        }).then(() => { load(); tg.showAlert("৳১.০০ ডেইলি বোনাস সফল!"); });
+            body: JSON.stringify({ chatId: userId, amount: 1.0, type: "Daily Reward" })
+        }).then(() => { load(); tg.showAlert("৳১.০০ ডেইলি রিওয়ার্ড বোনাস সফল!"); });
     }
 
     function shareRefer() {
         const link = `https://t.me/Emoneybd_Bot?start=${userId}`;
         navigator.clipboard.writeText(link);
-        tg.showAlert("আপনার রেফার লিংক কপি হয়েছে:\n" + link);
+        tg.showAlert("আপনার ইনভাইট লিংক কপি হয়েছে! শেয়ার করুন:\n" + link);
     }
 
-    function showProfile() {
-        tg.showAlert(`নাম: ${tg.initDataUnsafe.user.first_name}\nআইডি: ${userId}\nস্ট্যাটাস: প্রফেশনাল মেম্বার ✅`);
+    function processWithdraw(method) {
+        tg.showPopup({
+            title: method + ' Cashout',
+            message: 'আপনার ওয়ালেট নম্বর এবং উইথড্র পরিমাণ সাবমিট করুন।',
+            buttons: [{id: 'ok', type: 'default', text: 'প্রোসেস করুন'}]
+        }, (buttonId) => {
+            tg.showAlert("উইথড্র সিস্টেমটি সচল করতে এডমিনের সাথে যোগাযোগ করুন অথবা পরবর্তী আপডেটের জন্য অপেক্ষা করুন।");
+        });
+    }
+
+    function loadHistory() {
+        fetch(`${apiBase}/api/history/${userId}`).then(r => r.json()).then(data => {
+            const container = document.getElementById('history-list');
+            if(!data || data.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); padding:20px;">কোনো ট্রানজেকশন রেকর্ড পাওয়া যায়নি।</div>`;
+                return;
+            }
+            container.innerHTML = data.map(item => `
+                <div class="history-item">
+                    <div style="text-align:left;">
+                        <div class="hist-type">${item.type}</div>
+                        <div class="hist-date">${new Date(item.date).toLocaleTimeString()}</div>
+                    </div>
+                    <div class="hist-amount amount-plus">+৳${item.amount.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }).catch(() => {
+            document.getElementById('history-list').innerHTML = `<div style="color:var(--text-muted); padding:20px;">হিস্ট্রি লোড করতে সমস্যা হচ্ছে।</div>`;
+        });
     }
 </script>
 </body>
